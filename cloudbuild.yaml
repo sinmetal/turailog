@@ -8,3 +8,12 @@ steps:
       - --destination=asia-northeast1-docker.pkg.dev/$PROJECT_ID/turailog/$BRANCH_NAME:$COMMIT_SHA
       - --cache=true
       - --cache-ttl=6h
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+      - set
+      - image
+      - deployment/turailog-dep
+      - turailog-dep=asia-northeast1-docker.pkg.dev/$PROJECT_ID/turailog/$BRANCH_NAME:$COMMIT_SHA
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=asia-northeast1-b'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=sinmetal-tokyo'

@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: turailog-dep
+  labels:
+    app: turailog-dep
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: turailog-dep
+  template:
+    metadata:
+      labels:
+        app: turailog-dep
+    spec:
+      containers:
+        - name: turailog-dep
+          image: asia-northeast1-docker.pkg.dev/$PROJECT_ID/turailog/$BRANCH_NAME:$COMMIT_SHA
