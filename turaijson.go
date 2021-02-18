@@ -51,8 +51,8 @@ type LabelAnnotation struct {
 }
 
 type TuraiJsonOutputter struct {
-	CurrentID   int64
-	SleepSecond int64
+	CurrentID        int64
+	sleepMillisecond int64
 }
 
 func (outputter *TuraiJsonOutputter) Run(ctx context.Context) {
@@ -66,8 +66,8 @@ func (outputter *TuraiJsonOutputter) Run(ctx context.Context) {
 			category := int(now.Unix() % 3)
 			outputter.Log(outputter.GenerateTurai(category))
 			outputter.CurrentID++
-			time.Sleep(time.Duration(outputter.SleepSecond) * time.Second)
-			outputter.SleepSecond += 1 + outputter.SleepSecond
+
+			time.Sleep(time.Duration(outputter.NextSleepMillisecond()) * time.Millisecond)
 		}
 	}
 }
@@ -118,6 +118,17 @@ func (outputter *TuraiJsonOutputter) GenerateTurai(category int) *TuraiJson {
 		Metadata:   metadata,
 		AppVersion: "v0.0.0",
 	}
+}
+
+// NextSleepSeconds is ログ出力頻度を調整するためのSleep値を返す
+// デバッグが楽なように最初はほいほいログを出力するが、だんだん頻度を落としていき、最終的には適当に出すようになる
+func (outputter *TuraiJsonOutputter) NextSleepMillisecond() int64 {
+	const maxIntervalMillisecond = 3 * 60 * 1000
+	outputter.sleepMillisecond += 250
+	if outputter.sleepMillisecond > maxIntervalMillisecond {
+		return rand.Int63n(maxIntervalMillisecond)
+	}
+	return outputter.sleepMillisecond
 }
 
 func RandomLabelAnnotations(count int) []*LabelAnnotation {
